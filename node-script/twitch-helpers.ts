@@ -5,8 +5,8 @@ import { HelixPaginatedRequestWithTotal } from 'twitch/lib/API/Helix/HelixPagina
 const fetch = require('node-fetch')
 const cliProgress = require('cli-progress')
 
-const clientId = "ypiqzq93lwamxuj6vxww7knhe2rq4e"
-const clientSecret = "yqnhzk351a40vca3tstvczv7o34war"
+const clientId = process.env.clientId
+const clientSecret = process.env.clientSecret
 
 // const authProvider = new StaticAuthProvider(clientId, accessToken)
 const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);

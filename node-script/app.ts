@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 import {findUserInFollowedChats, getProgress} from './twitch-helpers'
 import express = require('express')
 const app = express()
