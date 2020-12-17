@@ -3,7 +3,7 @@ require('dotenv').config()
 import {findUserInFollowedChats, getProgress} from './twitch-helpers'
 import express = require('express')
 const app = express()
-const port = process.env.PORT
+const port = process.env.PORT || 80
 
 app.use(express.static(__dirname + '/../frontend/build/'))
 
