@@ -5,7 +5,7 @@ import express = require('express')
 const app = express()
 const port = 80
 
-app.use(express.static('../website/build/'))
+app.use(express.static(__dirname + '/../frontend/build/'))
 
 app.get('/', (req, res) => {
 	res.sendFile("index.html")

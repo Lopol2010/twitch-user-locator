@@ -12,25 +12,18 @@ const clientSecret = process.env.clientSecret
 const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
 const apiClient = new ApiClient({ authProvider })
 
-const progressBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+let progress = { 
+	value: 0,
+	total: 0,
+}
 
-
-// nikaypypy unuasha arrowwoods praden untovvn furbylol flexxxid MerrychXmas vashue u_r_0_d Slexboy
-// honeymad ountti xuylo_obgashenoe 
-// findUserInFollowedChats("ountti").then((result: any) => {
-// 	progressBar.stop()
-
-// 	console.log(`\n${result.chatter} is chatting in:`)
-// 	result.chats.forEach(data => {
-// 		console.log(`${data.chat}`)
-// 	})
-// 	console.log('\n')
-// }).catch(console.log)
+const REQUEST_INTERVAL = 10
 
 export function getProgress() {
-    return progressBar.value / progressBar.total
+    return progress.value / progress.total
 }
-export async function findUserInFollowedChats(userName: string)//: Promise<false | {chatter: string; chats: string[]}>
+
+export async function findUserInFollowedChats(userName: string)
 {
 	const user = await apiClient.helix.users.getUserByName(userName)
 	if (!user) {
@@ -40,20 +33,49 @@ export async function findUserInFollowedChats(userName: string)//: Promise<false
 	const followsReq = await apiClient.helix.users.getFollowsPaginated({user: user})
 	const followsList = await followsReq.getAll()
 
-    progressBar.start(followsList.length, 0)
+    progress.total = followsList.length
 
-	let found = await Promise.all(followsList.map(
-		async follow => {
-			let found = await IsUserInChat(userName, follow.followedUserDisplayName.toLowerCase())
-			progressBar.increment()
-			if(found) {
-				return follow.followedUserDisplayName
-			} 
-		}
-	))
+	// let found = await Promise.all(followsList.map(
+	// 	async follow => {
+	// 		let found = await IsUserInChat(userName, follow.followedUserDisplayName.toLowerCase())
+	// 		progress.value ++
+	// 		if(found) {
+	// 			return follow.followedUserDisplayName
+	// 		} 
+	// 	}
+	// ))
+	let found = await promiseAllInterval(followsList.map(
+			async follow => {
+				let found = await IsUserInChat(userName, follow.followedUserDisplayName.toLowerCase())
+				progress.value ++
+				return found ? follow.followedUserDisplayName : undefined
+			}
+		), REQUEST_INTERVAL)
 	
-	progressBar.stop()
 	return { chatter: userName, chats: found.filter(value => value !== undefined) }
+}
+
+async function promiseAllInterval(promiseArray: any[], interval) {
+
+
+	return new Promise<any[]>((resolve, reject) => {
+
+		if(!promiseArray || promiseArray.length <= 0) resolve(promiseArray)
+
+		let i = 0
+		let resolvedArray = []
+		let intervalId = setInterval(async () => {
+			let promise = promiseArray[i]
+			promise.then(result => resolvedArray.push(result))
+			
+			if (i === promiseArray.length-1) {
+				clearInterval(intervalId)
+				resolve(resolvedArray)
+			}
+			i ++
+		}, interval)
+
+	})
 }
 
 async function IsUserInChat(userName: string, chatName:string) {

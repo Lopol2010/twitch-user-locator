@@ -96,17 +96,18 @@ export default class App extends react.Component {
 			// Cancel the default action, if needed
 			// e.preventDefault();
 			// Trigger the button element with a click
-			console.log(e.target.value)
 			this.saveUserName(e.target.value)
 		}
 	}
 
 	saveUserName(nickname) {
-		let cur = JSON.parse(localStorage.getItem("userlist")) || []
+		let cur = this.state.userlist || []
+		cur = cur.concat(JSON.parse(localStorage.getItem("userlist")) || [])
 
 		cur.push(nickname)
 		localStorage.setItem("userlist", JSON.stringify(cur))
-		// console.log(localStorage.getItem("userlist"))
+
+		this.setState({userlist: cur})
 	}
 
 	async findUserInFollowedChats(userName) {

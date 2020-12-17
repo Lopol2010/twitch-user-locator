@@ -5,7 +5,7 @@
   "main": "index.js",
   "bin": "app.js",
   "scripts": {
-    "start": "nodemon app.ts",
+    "start": "nodemon ./src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Lopol2010",
